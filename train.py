@@ -10,6 +10,7 @@ from unet.model import Model
 from unet.utils import MetricList
 from unet.metrics import jaccard_index, f1_score, LogNLLLoss
 from unet.dataset import JointTransform2D, ImageToImage2D, Image2D
+from torchsummary import summary
 
 parser = ArgumentParser()
 parser.add_argument('--train_dataset', required=True, type=str)
@@ -41,7 +42,8 @@ val_dataset = ImageToImage2D(args.val_dataset, tf_val)
 predict_dataset = Image2D(args.val_dataset)
 
 conv_depths = [int(args.width*(2**k)) for k in range(args.depth)]
-unet = UNet2D(args.in_channels, args.out_channels, conv_depths)
+unet = UNet2D(args.in_channels, args.out_channels, conv_depths).cuda()
+summary(unet,(1,800,540))
 loss = LogNLLLoss()
 optimizer = optim.Adam(unet.parameters(), lr=args.learning_rate)
 
